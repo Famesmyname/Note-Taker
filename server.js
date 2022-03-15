@@ -20,35 +20,35 @@ const fsWrite = util.promisify(fs.writeFile);
 
 
 //GET request to show all notes
-app.get('/api/notes'), async (req, res) => {
-    await fsRead('./db/db.json', 'utf8');
-    await function(data) {
+app.get('/api/notes', async (req, res) => {
+    fsRead('./db/db.json', 'utf8')
+    .then(function(data) {
         notes = [].concat(JSON.parse(data));
         res.json(notes)
-    }
-};
+    })
+});
 
 //POST request to add a note
-app.post('api/notes'), async (req, res) => {
+app.post('api/notes', async (req, res) => {
     const note = req.body
-    await fsRead('./db/db.json', 'utf8');
-    await function(data) {
+    fsRead('./db/db.json', 'utf8')
+    .then(function(data) {
         notes = [].concat(JSON.parse(data));
         note.id = notes.length++
         notes.push(note);
         return notes
-    }
-    await function(notes) {
+    })
+    .then(function(notes) {
         fsWrite('./db/db.json', JSON.stringify(notes))
         res.json(note)
-    }
-};
+    })
+});
 
 //DELETE request 
-app.delete('/api/notes/:id'), async (req, res) => {
-    const targetID = parseInt(req.params.id);
-    await fsRead('./db/db.json', 'utf8')
-    await function(data){
+app.delete('/api/notes/:id', async (req, res) => {
+    const targetID = parseInt(req.params.id)
+    fsRead('./db/db.json', 'utf8')
+    .then(function(data){
         const notes = [].concat(JSON.parse(data));
         const newNotes = [];
         for (let i = 0; i<notes.length; i++) {
@@ -56,11 +56,26 @@ app.delete('/api/notes/:id'), async (req, res) => {
                 newNotes.push(notes[i])
             }
         }
-    }
-    await function(notes) {
+    })
+    .then(function(notes) {
         fsWrite('./db/db.json', JSON.stringify(notes))
         res.send(`Note # ${targetID} was removed.`)
-    }
-}
+    })
+});
 
+//HTML
+app.get('/', (req,res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+})
 
+app.get('/notes', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/notes.html'));
+})
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+})
+
+app.listen(PORT, () =>
+  console.log(`App listening at http://localhost:${PORT} 💌🙂`)
+);
