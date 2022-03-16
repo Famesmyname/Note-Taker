@@ -20,27 +20,27 @@ const fsWrite = util.promisify(fs.writeFile);
 
 
 //GET request to show all notes
-app.get('/api/notes', async (req, res) => {
+app.get('/api/notes', (req, res) => {
     fsRead('./db/db.json', 'utf8')
     .then(function(data) {
-        notes = [].concat(JSON.parse(data));
+        let notes = [].concat(JSON.parse(data));
         res.json(notes)
     })
 });
 
 //POST request to add a note
-app.post('api/notes', async (req, res) => {
+app.post('/api/notes', (req, res) => {
     const note = req.body
     fsRead('./db/db.json', 'utf8')
     .then(function(data) {
-        notes = [].concat(JSON.parse(data));
+        let notes = [].concat(JSON.parse(data));
         note.id = notes.length++
         notes.push(note);
         return notes
     })
     .then(function(notes) {
         fsWrite('./db/db.json', JSON.stringify(notes))
-        res.json(note)
+        res.json(note);
     })
 });
 
