@@ -34,7 +34,7 @@ app.post('/api/notes', (req, res) => {
     fsRead('./db/db.json', 'utf8')
     .then(function(data) {
         let notes = [].concat(JSON.parse(data));
-        note.id = notes.length + 1
+        note.id = notes.at(-1).id + 1
         notes.push(note);
         return notes
     })
@@ -52,7 +52,7 @@ app.delete('/api/notes/:id', (req, res) => {
         const notes = [].concat(JSON.parse(data));
         const newNotes = [];
         for (let i = 0; i<notes.length; i++) {
-            if (targetID != notes[i].id) {
+            if (targetID !== notes[i].id) {
                 newNotes.push(notes[i])
             }
         }
